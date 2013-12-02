@@ -1,0 +1,3 @@
+[submodule "geojsonvalidation/schemas"]
+	path = geojsonvalidation/schemas
+	url = https://github.com/fge/sample-json-schemas.git
