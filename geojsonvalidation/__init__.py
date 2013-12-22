@@ -6,11 +6,11 @@ Docstring
 
 from geojson_validation import *
 
-__author__ = "henry"
-__copyright__ = "henry 2013"
-__credits__ = ["henry", ]
+__author__ = "om_henners"
+__copyright__ = "om_henners 2013"
+__credits__ = ["om_henners", ]
 __license__ = "Apache 2.0"
 __version__ = "0.0.1"
-__maintainer__ = "henry"
-__email__ = "user@some.domain"
+__maintainer__ = "om_henners"
+__email__ = "@om_henners"
 __status__ = "Prototype"
