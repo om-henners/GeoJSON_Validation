@@ -63,6 +63,8 @@ def __validate_geojson(geojson):
     """
     Validate a chunk of geojson. Used by the other functions to do the actual processing
 
+    :param geojson: GeoJSON to validate
+    :type geojson: dict
     :raises: jsonschema.ValidationError
     """
     try:
@@ -72,10 +74,14 @@ def __validate_geojson(geojson):
         raise
 
 
-def geojson_dict_is_valid(geojson):
+def geojson_dict_is_valid(geojson, raise_on_error=False):
     """
     Validate a geojson dictionary against the GeoJSON schema
 
+    :param geojson: GeoJSON to validate
+    :type geojson: dict
+    :param raise_on_error: Raise a jsonschema.ValidationError
+    :type raise_on_error: bool
     :rtype: bool
     """
     _logger.debug("Validating geojson dict")
@@ -83,6 +89,10 @@ def geojson_dict_is_valid(geojson):
         __validate_geojson(geojson)
         return True
     except jsonschema.ValidationError:
+        print "Validation Error"
+        if raise_on_error:
+            print "Raising"
+            raise
         return False
 
 
@@ -91,19 +101,31 @@ def validate_geojson_by_part(geojson):
     Validate the geojson by part. Generates broken geojson segments at the lowest level possible. I.E if there is a
     feature within the feature collection that may be broken, return the feature instead.
 
+    :param geojson: GeoJSON to validate
+    :type geojson: dict
     :return: generator
     """
+
     try:
         __validate_geojson(geojson)
     except jsonschema.ValidationError:
         try:
             if geojson["type"] == "GeometryCollection":
                 for gj in geojson["geometries"]:
-                    yield validate_geojson_by_part(gj)
+                    broken = validate_geojson_by_part(gj)
+                    if broken:
+                        return broken
             if geojson["type"] == "FeatureCollection":
                 for gj in geojson["features"]:
-                    yield validate_geojson_by_part(gj)
+                    broken = validate_geojson_by_part(gj)
+                    if broken:
+                        return broken
             if geojson["type"] == "Feature":
-                yield geojson
+                broken = validate_geojson_by_part(geojson["geometry"])
+                if broken:
+                    return broken
+                return geojson
+            #If none of the components are broken, this geojson is broken, so return it
+            return geojson
         except KeyError:
-            yield geojson
+            return geojson

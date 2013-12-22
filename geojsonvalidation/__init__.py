@@ -4,7 +4,7 @@
 Docstring
 """
 
-from geojson_validation import *
+from geojson_validation import geojson_dict_is_valid, validate_geojson_by_part
 
 __author__ = "om_henners"
 __copyright__ = "om_henners 2013"
